@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\DB;
 
 class WMenu
 {
-
     public function render()
     {
         $menu = new Menus();
@@ -20,18 +19,22 @@ class WMenu
         //$roles = Role::all();
 
         if ((request()->has("action") && empty(request()->input("menu"))) || request()->input("menu") == '0') {
-            return view('wmenu::menu-html')->with("menulist" , $menulist);
+            return view('wmenu::menu-html')->with("menulist", $menulist);
         } else {
 
             $menu = Menus::find(request()->input("menu"));
             $menus = $menuitems->getall(request()->input("menu"));
 
             $data = ['menus' => $menus, 'indmenu' => $menu, 'menulist' => $menulist];
-            if( config('menu.use_roles')) {
-                $data['roles'] = DB::table(config('menu.roles_table'))->select([config('menu.roles_pk'),config('menu.roles_title_field')])->get();
+            if (config('menu.use_roles')) {
+                $data['roles'] = DB::table(config('menu.roles_table'))->select([
+                    config('menu.roles_pk'),
+                    config('menu.roles_title_field'),
+                ])->get();
                 $data['role_pk'] = config('menu.roles_pk');
                 $data['role_title_field'] = config('menu.roles_title_field');
             }
+
             return view('wmenu::menu-html', $data);
         }
 
@@ -42,18 +45,19 @@ class WMenu
         return view('wmenu::scripts');
     }
 
-    public function select($name = "menu", $menulist = array())
+    public function select($name = "menu", $menulist = [])
     {
-        $html = '<select name="' . $name . '">';
+        $html = '<select name="'.$name.'">';
 
         foreach ($menulist as $key => $val) {
             $active = '';
             if (request()->input('menu') == $key) {
                 $active = 'selected="selected"';
             }
-            $html .= '<option ' . $active . ' value="' . $key . '">' . $val . '</option>';
+            $html .= '<option '.$active.' value="'.$key.'">'.$val.'</option>';
         }
         $html .= '</select>';
+
         return $html;
     }
 
@@ -68,6 +72,7 @@ class WMenu
     public static function getByName($name)
     {
         $menu = Menus::byName($name);
+
         return is_null($menu) ? [] : self::get($menu->id);
     }
 
@@ -76,21 +81,22 @@ class WMenu
         $menuItem = new MenuItems;
         $menu_list = $menuItem->getall($menu_id);
 
-        $roots = $menu_list->where('menu', (integer) $menu_id)->where('parent', 0);
+        $roots = $menu_list->where('menu', (integer)$menu_id)->where('parent', 0);
 
         $items = self::tree($roots, $menu_list);
+
         return $items;
     }
 
     private static function tree($items, $all_items)
     {
-        $data_arr = array();
+        $data_arr = [];
         $i = 0;
         foreach ($items as $item) {
             $data_arr[$i] = $item->toArray();
             $find = $all_items->where('parent', $item->id);
 
-            $data_arr[$i]['child'] = array();
+            $data_arr[$i]['child'] = [];
 
             if ($find->count()) {
                 $data_arr[$i]['child'] = self::tree($find, $all_items);

@@ -18,7 +18,8 @@ class MenuController extends Controller
         $menu = new Menus();
         $menu->name = request()->input("menuname");
         $menu->save();
-        return json_encode(array("resp" => $menu->id));
+
+        return json_encode(["resp" => $menu->id]);
     }
 
     public function deleteitemmenu()
@@ -36,9 +37,9 @@ class MenuController extends Controller
             $menudelete = Menus::find(request()->input("id"));
             $menudelete->delete();
 
-            return json_encode(array("resp" => "you delete this item"));
+            return json_encode(["resp" => "you delete this item"]);
         } else {
-            return json_encode(array("resp" => "You have to delete all items first", "error" => 1));
+            return json_encode(["resp" => "You have to delete all items first", "error" => 1]);
 
         }
     }
@@ -53,7 +54,7 @@ class MenuController extends Controller
                 $menuitem->link = $value['link'];
                 $menuitem->class = $value['class'];
                 if (config('menu.use_roles')) {
-                    $menuitem->role_id = $value['role_id'] ? $value['role_id'] : 0 ;
+                    $menuitem->role_id = $value['role_id'] ? $value['role_id'] : 0;
                 }
                 $menuitem->save();
             }
@@ -63,7 +64,7 @@ class MenuController extends Controller
             $menuitem->link = request()->input("url");
             $menuitem->class = request()->input("clases");
             if (config('menu.use_roles')) {
-                $menuitem->role_id = request()->input("role_id") ? request()->input("role_id") : 0 ;
+                $menuitem->role_id = request()->input("role_id") ? request()->input("role_id") : 0;
             }
             $menuitem->save();
         }
@@ -76,7 +77,7 @@ class MenuController extends Controller
         $menuitem->label = request()->input("labelmenu");
         $menuitem->link = request()->input("linkmenu");
         if (config('menu.use_roles')) {
-            $menuitem->role_id = request()->input("rolemenu") ? request()->input("rolemenu")  : 0 ;
+            $menuitem->role_id = request()->input("rolemenu") ? request()->input("rolemenu") : 0;
         }
         $menuitem->menu = request()->input("idmenu");
         $menuitem->sort = MenuItems::getNextSortRoot(request()->input("idmenu"));
@@ -103,7 +104,7 @@ class MenuController extends Controller
                 $menuitem->save();
             }
         }
-        echo json_encode(array("resp" => 1));
+        echo json_encode(["resp" => 1]);
 
     }
 }
